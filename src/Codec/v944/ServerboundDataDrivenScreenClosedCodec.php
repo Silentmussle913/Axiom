@@ -15,7 +15,7 @@ use pmmp\encoding\LE;
 
 class ServerboundDataDrivenScreenClosedCodec implements Codec{
 
-    public function decode(ByteBufferReader $in, CodecType $codec) : Packet{
+    public function decode(ByteBufferReader $in, CodecType $codec) : ServerboundDataDrivenScreenClosedPacket{
         $pk = new ServerboundDataDrivenScreenClosedPacket();
         $pk->formId = LE::readUnsignedInt($in);
         $pk->closeReason = CodecHelper::readString($in);

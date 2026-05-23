@@ -14,7 +14,7 @@ use pmmp\encoding\ByteBufferWriter;
 
 class PartyChangedCodec implements Codec{
 
-    public function decode(ByteBufferReader $in, CodecType $codec) : Packet{
+    public function decode(ByteBufferReader $in, CodecType $codec) : PartyChangedPacket{
         $pk = new PartyChangedPacket();
         $pk->partyId = CodecHelper::readString($in);
         $pk->partyLeader = CodecHelper::readBool($in);

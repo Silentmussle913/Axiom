@@ -26,7 +26,7 @@ use pmmp\encoding\VarInt;
 
 class ClientboundDataStoreCodec implements Codec{
 
-    public function decode(ByteBufferReader $in, CodecType $codec) : Packet{
+    public function decode(ByteBufferReader $in, CodecType $codec) : ClientboundDataStorePacket{
         $pk = new ClientboundDataStorePacket();
 
         $count = VarInt::readUnsignedInt($in);

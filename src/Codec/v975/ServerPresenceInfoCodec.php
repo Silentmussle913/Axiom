@@ -15,7 +15,7 @@ use pmmp\encoding\ByteBufferWriter;
 
 class ServerPresenceInfoCodec implements Codec{
 
-    public function decode(ByteBufferReader $in, CodecType $codec) : Packet{
+    public function decode(ByteBufferReader $in, CodecType $codec) : ServerPresenceInfoPacket{
         $pk = new ServerPresenceInfoPacket();
         $pk->presenceConfig = CodecHelper::readOptional($in, $this->readPresenceConfig(...));
         return $pk;

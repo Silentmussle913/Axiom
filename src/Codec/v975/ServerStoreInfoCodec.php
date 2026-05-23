@@ -15,7 +15,7 @@ use pmmp\encoding\ByteBufferWriter;
 
 class ServerStoreInfoCodec implements Codec{
 
-    public function decode(ByteBufferReader $in, CodecType $codec) : Packet{
+    public function decode(ByteBufferReader $in, CodecType $codec) : ServerStoreInfoPacket{
         $pk = new ServerStoreInfoPacket();
         $pk->clientStoreEntrypointConfig = CodecHelper::readOptional($in, $this->readClientStoreEntrypointConfig(...));
         return $pk;
