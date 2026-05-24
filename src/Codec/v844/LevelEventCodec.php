@@ -7,6 +7,7 @@ namespace Nicholass003\Axiom\Codec\v844;
 use Nicholass003\Axiom\Codec\Codec;
 use Nicholass003\Axiom\Codec\CodecHelper;
 use Nicholass003\Axiom\Codec\CodecType;
+use Nicholass003\Axiom\Enum\LevelEventType;
 use Nicholass003\Axiom\Packet\LevelEventPacket;
 use Nicholass003\Axiom\Packet\Packet;
 use pmmp\encoding\ByteBufferReader;
@@ -17,7 +18,7 @@ class LevelEventCodec implements Codec{
 
     public function decode(ByteBufferReader $in, CodecType $codec) : LevelEventPacket{
         $pk = new LevelEventPacket();
-        $pk->eventId = VarInt::readSignedInt($in);
+        $pk->eventId = LevelEventType::safe(VarInt::readSignedInt($in));
         $pk->position = CodecHelper::readVec3($in);
         $pk->eventData = VarInt::readSignedInt($in);
         return $pk;
@@ -25,7 +26,7 @@ class LevelEventCodec implements Codec{
 
     public function encode(ByteBufferWriter $out, Packet $pk, CodecType $codec) : void{
         assert($pk instanceof LevelEventPacket);
-        VarInt::writeSignedInt($out, $pk->eventId);
+        VarInt::writeSignedInt($out, $pk->eventId->value);
         CodecHelper::writeVec3Nullable($out, $pk->position);
         VarInt::writeSignedInt($out, $pk->eventData);
     }

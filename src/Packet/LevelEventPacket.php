@@ -6,13 +6,14 @@ namespace Nicholass003\Axiom\Packet;
 
 use Nicholass003\Axiom\Data\PacketRecipient;
 use Nicholass003\Axiom\Data\Type\Vec3;
+use Nicholass003\Axiom\Enum\LevelEventType;
 
 class LevelEventPacket implements Packet{
 
     public const ID = PacketIds::LEVEL_EVENT;
     public const RECIPIENT = PacketRecipient::CLIENT;
 
-    public int $eventId;
+    public LevelEventType $eventId;
     public int $eventData;
     public ?Vec3 $position = null;
 }
