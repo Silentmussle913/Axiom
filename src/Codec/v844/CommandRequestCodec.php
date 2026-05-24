@@ -29,7 +29,6 @@ class CommandRequestCodec implements Codec{
         CodecHelper::writeString($out, $pk->command);
         $codec->command()->originData()->write($out, $pk->originData);
         CodecHelper::writeBool($out, $pk->isInternal);
-        VarInt::writeSignedInt($out, $pk->version);
-        var_dump($pk->version);
+        VarInt::writeSignedInt($out, is_string($pk->version) ? 44 : $pk->version); //hardcode for now
     }
 }

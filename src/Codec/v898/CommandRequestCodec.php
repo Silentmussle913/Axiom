@@ -33,6 +33,6 @@ class CommandRequestCodec implements Codec{
         CodecHelper::writeString($out, $pk->command);
         $originData->write($out, $pk->originData);
         CodecHelper::writeBool($out, $pk->isInternal);
-        CodecHelper::writeString($out, $pk->version);
+        CodecHelper::writeString($out, is_int($pk->version) ? "latest" : $pk->version); //hardcode for now
     }
 }
