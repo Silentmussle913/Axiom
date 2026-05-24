@@ -10,6 +10,8 @@ use Nicholass003\Axiom\Version\Protocol\Protocol859;
 use Nicholass003\Axiom\Version\Protocol\Protocol860;
 use Nicholass003\Axiom\Version\Protocol\Protocol898;
 use Nicholass003\Axiom\Version\Protocol\Protocol924;
+use Nicholass003\Axiom\Version\Protocol\Protocol944;
+use Nicholass003\Axiom\Version\Protocol\Protocol975;
 use Nicholass003\Axiom\Version\ProtocolVersion;
 
 class Axiom{
@@ -30,8 +32,8 @@ class Axiom{
             ProtocolVersion::v860 => Protocol860::build(),
             ProtocolVersion::v898 => Protocol898::build(),
             ProtocolVersion::v924 => Protocol924::build(),
-            ProtocolVersion::v944 => Protocol924::build(),
-            ProtocolVersion::v975 => Protocol924::build(),
+            ProtocolVersion::v944 => Protocol944::build(),
+            ProtocolVersion::v975 => Protocol975::build(),
             default => throw new \InvalidArgumentException("Protocol $protocol not yet implemented in Axiom"),
         };
         return self::$cache[$protocol] = $builder;
