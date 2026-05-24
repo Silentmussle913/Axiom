@@ -20,6 +20,7 @@ class MobArmorEquipmentCodec implements Codec{
         $pk->chest = CodecHelper::readItemStackWrapper($in);
         $pk->legs = CodecHelper::readItemStackWrapper($in);
         $pk->feet = CodecHelper::readItemStackWrapper($in);
+        $pk->body = CodecHelper::readItemStackWrapper($in);
         return $pk;
     }
 
@@ -29,5 +30,6 @@ class MobArmorEquipmentCodec implements Codec{
         CodecHelper::writeItemStackWrapper($out, $pk->chest);
         CodecHelper::writeItemStackWrapper($out, $pk->legs);
         CodecHelper::writeItemStackWrapper($out, $pk->feet);
+        CodecHelper::writeItemStackWrapper($out, $pk->body);
     }
 }
