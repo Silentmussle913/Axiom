@@ -19,34 +19,15 @@ use pmmp\encoding\LE;
 class ServerboundDiagnosticsCodec extends V924ServerboundDiagnosticsCodec{
 
     public function decode(ByteBufferReader $in, CodecType $codec) : ServerboundDiagnosticsPacket{
-        $pk = new ServerboundDiagnosticsPacket();
-        $pk->avgFps = LE::readFloat($in);
-        $pk->avgServerSimTickTimeMS = LE::readFloat($in);
-        $pk->avgClientSimTickTimeMS = LE::readFloat($in);
-        $pk->avgBeginFrameTimeMS = LE::readFloat($in);
-        $pk->avgInputTimeMS = LE::readFloat($in);
-        $pk->avgRenderTimeMS = LE::readFloat($in);
-        $pk->avgEndFrameTimeMS = LE::readFloat($in);
-        $pk->avgRemainderTimePercent = LE::readFloat($in);
-        $pk->avgUnaccountedTimePercent = LE::readFloat($in);
-        $pk->memoryCategoryValues = CodecHelper::readList($in, $this->readCategoryCounter(...));
+        $pk = parent::decode($in, $codec);
         $pk->entityDiagnostics = CodecHelper::readList($in, $this->readEntityDiagnostic(...));
         $pk->systemDiagnostics = CodecHelper::readList($in, $this->readSystemDiagnostic(...));
         return $pk;
     }
 
     public function encode(ByteBufferWriter $out, Packet $pk, CodecType $codec) : void{
+        parent::encode($out, $pk, $codec);
         assert($pk instanceof ServerboundDiagnosticsPacket);
-        LE::writeFloat($out, $pk->avgFps);
-        LE::writeFloat($out, $pk->avgServerSimTickTimeMS);
-        LE::writeFloat($out, $pk->avgClientSimTickTimeMS);
-        LE::writeFloat($out, $pk->avgBeginFrameTimeMS);
-        LE::writeFloat($out, $pk->avgInputTimeMS);
-        LE::writeFloat($out, $pk->avgRenderTimeMS);
-        LE::writeFloat($out, $pk->avgEndFrameTimeMS);
-        LE::writeFloat($out, $pk->avgRemainderTimePercent);
-        LE::writeFloat($out, $pk->avgUnaccountedTimePercent);
-        CodecHelper::writeList($out, $pk->memoryCategoryValues, $this->writeCategoryCounter(...));
         CodecHelper::writeList($out, $pk->entityDiagnostics, $this->writeEntityDiagnostic(...));
         CodecHelper::writeList($out, $pk->systemDiagnostics, $this->writeSystemDiagnostic(...));
     }
@@ -56,12 +37,7 @@ class ServerboundDiagnosticsCodec extends V924ServerboundDiagnosticsCodec{
         $entity = CodecHelper::readString($in);
         $timeInNS = LE::readUnsignedLong($in);
         $percentOfTotal = Byte::readUnsigned($in);
-        return new EntityDiagnosticTimingInfo(
-            $displayName,
-            $entity,
-            $timeInNS,
-            $percentOfTotal
-        );
+        return new EntityDiagnosticTimingInfo($displayName, $entity, $timeInNS, $percentOfTotal);
     }
 
     protected function writeEntityDiagnostic(ByteBufferWriter $out, EntityDiagnosticTimingInfo $data) : void{
@@ -76,12 +52,7 @@ class ServerboundDiagnosticsCodec extends V924ServerboundDiagnosticsCodec{
         $systemIndex = LE::readUnsignedLong($in);
         $timeInNS = LE::readUnsignedLong($in);
         $percentOfTotal = Byte::readUnsigned($in);
-        return new SystemDiagnosticTimingInfo(
-            $displayName,
-            $systemIndex,
-            $timeInNS,
-            $percentOfTotal
-        );
+        return new SystemDiagnosticTimingInfo($displayName, $systemIndex, $timeInNS, $percentOfTotal);
     }
 
     protected function writeSystemDiagnostic(ByteBufferWriter $out, SystemDiagnosticTimingInfo $data) : void{
