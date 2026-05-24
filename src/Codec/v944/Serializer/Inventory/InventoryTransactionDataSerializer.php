@@ -31,7 +31,7 @@ class InventoryTransactionDataSerializer extends BaseInventoryTransactionDataSer
             $actions,
             VarInt::readUnsignedInt($in),
             $this->readTriggerType($in),
-            CodecHelper::readBlockPosition($in),
+            CodecHelper::readSignedBlockPosition($in),
             VarInt::readSignedInt($in),
             VarInt::readSignedInt($in),
             CodecHelper::readItemStackWrapper($in),
@@ -46,7 +46,7 @@ class InventoryTransactionDataSerializer extends BaseInventoryTransactionDataSer
     protected function writeUseItemData(ByteBufferWriter $out, UseItemTransactionData $data, CodecType $codec) : void{
         VarInt::writeUnsignedInt($out, $data->actionType);
         $this->writeTriggerType($out, $data->triggerType);
-        CodecHelper::writeBlockPosition($out, $data->blockPosition);
+        CodecHelper::writeSignedBlockPosition($out, $data->blockPosition);
         VarInt::writeSignedInt($out, $data->face);
         VarInt::writeSignedInt($out, $data->hotbarSlot);
         CodecHelper::writeItemStackWrapper($out, $data->itemInHand);

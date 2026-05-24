@@ -7,26 +7,24 @@ namespace Nicholass003\Axiom\Codec\v944;
 use Nicholass003\Axiom\Codec\Codec;
 use Nicholass003\Axiom\Codec\CodecHelper;
 use Nicholass003\Axiom\Codec\CodecType;
-use Nicholass003\Axiom\Packet\BlockPickRequestPacket;
+use Nicholass003\Axiom\Packet\AnvilDamagePacket;
 use Nicholass003\Axiom\Packet\Packet;
 use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 
-class BlockPickRequestCodec implements Codec{
+class AnvilDamageCodec implements Codec{
 
-    public function decode(ByteBufferReader $in, CodecType $codec) : BlockPickRequestPacket{
-        $pk = new BlockPickRequestPacket();
+    public function decode(ByteBufferReader $in, CodecType $codec) : AnvilDamagePacket{
+        $pk = new AnvilDamagePacket();
+        $pk->damageAmount = Byte::readUnsigned($in);
         $pk->blockPosition = CodecHelper::readSignedBlockPosition($in);
-        $pk->addUserData = CodecHelper::readBool($in);
-        $pk->hotbarSlot = Byte::readUnsigned($in);
         return $pk;
     }
 
     public function encode(ByteBufferWriter $out, Packet $pk, CodecType $codec) : void{
-        assert($pk instanceof BlockPickRequestPacket);
+        assert($pk instanceof AnvilDamagePacket);
+        Byte::writeUnsigned($out, $pk->damageAmount);
         CodecHelper::writeSignedBlockPosition($out, $pk->blockPosition);
-        CodecHelper::writeBool($out, $pk->addUserData);
-        Byte::writeUnsigned($out, $pk->hotbarSlot);
     }
 }

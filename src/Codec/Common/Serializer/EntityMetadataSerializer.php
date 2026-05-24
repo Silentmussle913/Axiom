@@ -36,7 +36,7 @@ class EntityMetadataSerializer implements ForkableInterface{
                 MetadataPropertyType::FLOAT => LE::readFloat($in),
                 MetadataPropertyType::STRING => CodecHelper::readString($in),
                 MetadataPropertyType::COMPOUND_TAG => CodecHelper::readNbt($in),
-                MetadataPropertyType::BLOCK_POS => CodecHelper::readBlockPosition($in),
+                MetadataPropertyType::BLOCK_POS => CodecHelper::readSignedBlockPosition($in),
                 MetadataPropertyType::LONG => VarInt::readSignedLong($in),
                 MetadataPropertyType::VEC3 => CodecHelper::readVec3($in),
                 default => throw new \RuntimeException("Unknown metadata type")
@@ -65,7 +65,7 @@ class EntityMetadataSerializer implements ForkableInterface{
                 MetadataPropertyType::FLOAT => LE::writeFloat($out, $entry->value),
                 MetadataPropertyType::STRING => CodecHelper::writeString($out, $entry->value),
                 MetadataPropertyType::COMPOUND_TAG => CodecHelper::writeNbt($out, $entry->value),
-                MetadataPropertyType::BLOCK_POS => CodecHelper::writeBlockPosition($out, $entry->value),
+                MetadataPropertyType::BLOCK_POS => CodecHelper::writeSignedBlockPosition($out, $entry->value),
                 MetadataPropertyType::LONG => VarInt::writeSignedLong($out, $entry->value),
                 MetadataPropertyType::VEC3 => CodecHelper::writeVec3($out, $entry->value),
                 default => throw new \RuntimeException("Unknown metadata type")
