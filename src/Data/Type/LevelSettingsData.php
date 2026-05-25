@@ -8,6 +8,15 @@ use Nicholass003\Axiom\Data\Type\Education\EducationUriResource;
 
 class LevelSettingsData{
 
+    /** @deprecated v924 */
+    public readonly string $serverIdentifier;
+    /** @deprecated v924 */
+    public readonly string $worldIdentifier;
+    /** @deprecated v924 */
+    public readonly string $scenarioIdentifier;
+    /** @deprecated v924 */
+    public readonly string $ownerIdentifier;
+
     /**
      * @param array<string, mixed> $gameRules
      */
@@ -60,9 +69,14 @@ class LevelSettingsData{
         public readonly ?bool $experimentalGameplayOverride,
         public readonly int $chatRestrictionLevel,
         public readonly bool $disablePlayerInteractions,
-        public readonly string $serverIdentifier,
-        public readonly string $worldIdentifier,
-        public readonly string $scenarioIdentifier,
-        public readonly string $ownerIdentifier
-    ){}
+        string $serverIdentifier = '',
+        string $worldIdentifier = '',
+        string $scenarioIdentifier = '',
+        string $ownerIdentifier = ''
+    ){
+        $this->serverIdentifier = $serverIdentifier;
+        $this->worldIdentifier = $worldIdentifier;
+        $this->scenarioIdentifier = $scenarioIdentifier;
+        $this->ownerIdentifier = $ownerIdentifier;
+    }
 }

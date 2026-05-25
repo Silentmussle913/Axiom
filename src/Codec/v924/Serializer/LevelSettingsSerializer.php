@@ -87,12 +87,7 @@ class LevelSettingsSerializer extends BaseLevelSettingsSerializer{
             CodecHelper::readOptional($in, CodecHelper::readBool(...)),
 
             Byte::readUnsigned($in),
-            CodecHelper::readBool($in),
-
-            '',
-            '',
-            '',
-            ''
+            CodecHelper::readBool($in)
         );
     }
 
