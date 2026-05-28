@@ -31,6 +31,6 @@ class InventorySlotCodec implements Codec{
         VarInt::writeUnsignedInt($out, $pk->inventorySlot);
         CodecHelper::writeOptional($out, $pk->containerName, $codec->inventory()->container()->write(...));
         CodecHelper::writeOptional($out, $pk->storage, CodecHelper::writeNetworkItemStackDescriptor(...));
-        CodecHelper::writeItemStackWrapper($out, $pk->item);
+        CodecHelper::writeNetworkItemStackDescriptor($out, $pk->item);
     }
 }
