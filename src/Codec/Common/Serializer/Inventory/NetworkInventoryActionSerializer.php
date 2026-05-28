@@ -55,7 +55,7 @@ class NetworkInventoryActionSerializer implements ForkableInterface{
         CodecHelper::writeItemStackWrapper($out, $action->newItem);
     }
 
-    private function readSourceType(ByteBufferReader $in) : InventoryActionSourceType{
+    protected function readSourceType(ByteBufferReader $in) : InventoryActionSourceType{
         $raw = VarInt::readUnsignedInt($in);
         $type = InventoryActionSourceType::safe($raw);
         if($type === InventoryActionSourceType::UNKNOWN){
@@ -64,14 +64,14 @@ class NetworkInventoryActionSerializer implements ForkableInterface{
         return $type;
     }
 
-    private function writeSourceType(ByteBufferWriter $out, InventoryActionSourceType $type) : void{
+    protected function writeSourceType(ByteBufferWriter $out, InventoryActionSourceType $type) : void{
         if($type === InventoryActionSourceType::UNKNOWN){
             throw new \InvalidArgumentException("Unknown inventory action source type");
         }
         VarInt::writeUnsignedInt($out, $type->value);
     }
 
-    private function requireWindowId(NetworkInventoryAction $action) : int{
+    protected function requireWindowId(NetworkInventoryAction $action) : int{
         return $action->windowId ?? throw new \InvalidArgumentException("Window ID required for source type " . $action->sourceType->name);
     }
 }
