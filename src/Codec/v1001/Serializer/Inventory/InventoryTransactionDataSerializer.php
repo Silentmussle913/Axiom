@@ -17,6 +17,7 @@ use Nicholass003\Axiom\Data\Type\Inventory\UseItemOnEntityTransactionData;
 use Nicholass003\Axiom\Data\Type\Inventory\UseItemTransactionData;
 use Nicholass003\Axiom\Enum\InventoryTransactionType;
 use Nicholass003\Axiom\Enum\PredictedResult;
+use Nicholass003\Axiom\Enum\TriggerType;
 use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
@@ -32,8 +33,10 @@ class InventoryTransactionDataSerializer extends BaseInventoryTransactionDataSer
 
     public function read(ByteBufferReader $in, CodecType $codec) : TransactionData{
         $type = $this->readTransactionType($in);
-        $hasActions = CodecHelper::readBool($in);
-        $actions = $hasActions ? $this->readActions($in) : [];
+
+        CodecHelper::readBool($in);
+
+        $actions = $this->readActions($in);
 
         return match($type){
             InventoryTransactionType::NORMAL => new NormalTransactionData($actions),
@@ -49,11 +52,10 @@ class InventoryTransactionDataSerializer extends BaseInventoryTransactionDataSer
         $type = $this->getTransactionType($data);
         $this->writeTransactionType($out, $type);
 
+        CodecHelper::writeBool($out, true);
+
         $actions = $this->getActions($data);
-        CodecHelper::writeBool($out, !empty($actions));
-        if(!empty($actions)){
-            $this->writeActions($out, $actions);
-        }
+        $this->writeActions($out, $actions);
 
         match(true){
             $data instanceof NormalTransactionData => null,
@@ -71,7 +73,7 @@ class InventoryTransactionDataSerializer extends BaseInventoryTransactionDataSer
     protected function readUseItemData(ByteBufferReader $in, array $actions, CodecType $codec) : UseItemTransactionData{
         return new UseItemTransactionData(
             $actions,
-            VarInt::readUnsignedInt($in),
+            VarInt::readSignedInt($in),
             $this->readTriggerType($in),
             CodecHelper::readSignedBlockPosition($in),
             Byte::readSigned($in),
@@ -86,7 +88,7 @@ class InventoryTransactionDataSerializer extends BaseInventoryTransactionDataSer
     }
 
     protected function writeUseItemData(ByteBufferWriter $out, UseItemTransactionData $data, CodecType $codec) : void{
-        VarInt::writeUnsignedInt($out, $data->actionType);
+        VarInt::writeSignedInt($out, $data->actionType);
         $this->writeTriggerType($out, $data->triggerType);
         CodecHelper::writeSignedBlockPosition($out, $data->blockPosition);
         Byte::writeSigned($out, $data->face);
@@ -106,7 +108,7 @@ class InventoryTransactionDataSerializer extends BaseInventoryTransactionDataSer
         return new UseItemOnEntityTransactionData(
             $actions,
             CodecHelper::readActorRuntimeId($in),
-            VarInt::readUnsignedInt($in),
+            VarInt::readSignedInt($in),
             VarInt::readSignedInt($in),
             CodecHelper::readNetworkItemStackDescriptor($in),
             CodecHelper::readVec3($in),
@@ -116,7 +118,7 @@ class InventoryTransactionDataSerializer extends BaseInventoryTransactionDataSer
 
     protected function writeUseItemOnEntityData(ByteBufferWriter $out, UseItemOnEntityTransactionData $data, CodecType $codec) : void{
         CodecHelper::writeActorRuntimeId($out, $data->actorRuntimeId);
-        VarInt::writeUnsignedInt($out, $data->actionType);
+        VarInt::writeSignedInt($out, $data->actionType);
         VarInt::writeSignedInt($out, $data->hotbarSlot);
         CodecHelper::writeNetworkItemStackDescriptor($out, $data->itemInHand);
         CodecHelper::writeVec3($out, $data->playerPosition);
@@ -129,7 +131,7 @@ class InventoryTransactionDataSerializer extends BaseInventoryTransactionDataSer
     protected function readReleaseItemData(ByteBufferReader $in, array $actions, CodecType $codec) : ReleaseItemTransactionData{
         return new ReleaseItemTransactionData(
             $actions,
-            VarInt::readUnsignedInt($in),
+            VarInt::readSignedInt($in),
             VarInt::readSignedInt($in),
             CodecHelper::readNetworkItemStackDescriptor($in),
             CodecHelper::readVec3($in)
@@ -137,10 +139,23 @@ class InventoryTransactionDataSerializer extends BaseInventoryTransactionDataSer
     }
 
     protected function writeReleaseItemData(ByteBufferWriter $out, ReleaseItemTransactionData $data, CodecType $codec) : void{
-        VarInt::writeUnsignedInt($out, $data->actionType);
+        VarInt::writeSignedInt($out, $data->actionType);
         VarInt::writeSignedInt($out, $data->hotbarSlot);
         CodecHelper::writeNetworkItemStackDescriptor($out, $data->itemInHand);
         CodecHelper::writeVec3($out, $data->headPosition);
+    }
+
+    protected function readTriggerType(ByteBufferReader $in) : TriggerType{
+        $raw = Byte::readUnsigned($in);
+        $type = TriggerType::safe($raw);
+        if($type === TriggerType::INVALID){
+            throw new \RuntimeException("Invalid trigger type $raw");
+        }
+        return $type;
+    }
+
+    protected function writeTriggerType(ByteBufferWriter $out, TriggerType $type) : void{
+        Byte::writeUnsigned($out, $type->value);
     }
 
     protected function readPredictedResult(ByteBufferReader $in) : PredictedResult{

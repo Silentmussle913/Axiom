@@ -21,20 +21,21 @@ class InventoryTransactionCodec implements Codec{
         $pk = new InventoryTransactionPacket();
         $pk->requestId = VarInt::readSignedInt($in);
         $pk->requestChangedSlots = [];
-        if($pk->requestId !== 0){
-            $pk->requestChangedSlots = CodecHelper::readList($in, function(ByteBufferReader $in) : InventoryTransactionChangedSlotsHack{
-                return new InventoryTransactionChangedSlotsHack(
-                    Byte::readUnsigned($in),
-                    CodecHelper::readList($in, fn($in) => Byte::readUnsigned($in))
-                );
-            });
+        $pk->hasLegacySetSlots = CodecHelper::readBool($in);
+        if($pk->hasLegacySetSlots){
+            if($pk->requestId !== 0){
+                $pk->requestChangedSlots = CodecHelper::readList($in, function(ByteBufferReader $in) : InventoryTransactionChangedSlotsHack{
+                    return new InventoryTransactionChangedSlotsHack(
+                        Byte::readUnsigned($in),
+                        CodecHelper::readList($in, fn($in) => Byte::readUnsigned($in))
+                    );
+                });
+            }
         }
 
-        $pk->hasLegacySetSlots = CodecHelper::readBool($in); //WHY MOJANG???
         $pk->hasTransactionData = CodecHelper::readBool($in);
-        if($pk->hasTransactionData){
-            $pk->trData = $codec->inventory()->transaction()->read($in, $codec);
-        }
+
+        $pk->trData = $codec->inventory()->transaction()->read($in, $codec);
 
         return $pk;
     }
@@ -43,16 +44,17 @@ class InventoryTransactionCodec implements Codec{
         assert($pk instanceof InventoryTransactionPacket);
         VarInt::writeSignedInt($out, $pk->requestId);
         if($pk->requestId !== 0){
+            CodecHelper::writeBool($out, true);
             CodecHelper::writeList($out, $pk->requestChangedSlots, function(ByteBufferWriter $out, InventoryTransactionChangedSlotsHack $changed) : void{
                 Byte::writeUnsigned($out, $changed->containerId);
                 CodecHelper::writeList($out, $changed->changedSlotIndexes, fn($out, $index) => Byte::writeUnsigned($out, $index));
             });
+        }else{
+            CodecHelper::writeBool($out, false);
         }
 
-        CodecHelper::writeBool($out, $pk->hasLegacySetSlots);
-        CodecHelper::writeBool($out, $pk->hasTransactionData);
-        if($pk->hasTransactionData){
-            $codec->inventory()->transaction()->write($out, $pk->trData, $codec);
-        }
+        CodecHelper::writeBool($out, true);
+
+        $codec->inventory()->transaction()->write($out, $pk->trData, $codec);
     }
-}   
+}
