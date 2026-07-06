@@ -18,6 +18,26 @@ final class LevelSoundTypeRegistry{
      */
     private static array $toString = [];
 
+    /**
+     * Loads a Bedrock sound identifier mapping into the registry.
+     *
+     * Populates bidirectional lookups between sound identifiers and
+     * {@see LevelSoundType} values. Entries with unknown enum values
+     * are ignored.
+     *
+     * @param array<string, int> $mapping Map of sound identifier => sound event ID.
+     */
+    public static function loadMappings(array $mapping) : void{
+        foreach($mapping as $stringId => $intValue){
+            $enum = LevelSoundType::tryFrom($intValue);
+
+            if($enum !== null){
+                self::$fromString[$stringId] = $enum;
+                self::$toString[$intValue] = $stringId;
+            }
+        }
+    }
+
     public static function fromString(string $value) : LevelSoundType{
         $value = strtolower($value);
 
