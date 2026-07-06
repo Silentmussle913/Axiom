@@ -40,14 +40,14 @@ trait DataStoreSerializationTrait{
         $property = CodecHelper::readString($in);
         $path = CodecHelper::readString($in);
         $data = $this->readDataStoreValue($in);
-        $updateCount = VarInt::readUnsignedInt($in);
+        $updateCount = LE::readUnsignedInt($in);
         return new DataStoreUpdate($name, $property, $path, $data, $updateCount);
     }
 
     protected function readChange(ByteBufferReader $in) : DataStoreChange{
         $name = CodecHelper::readString($in);
         $property = CodecHelper::readString($in);
-        $updateCount = VarInt::readUnsignedInt($in);
+        $updateCount = LE::readUnsignedInt($in);
         $data = $this->readDataStoreValue($in);
         return new DataStoreChange($name, $property, $updateCount, $data);
     }
@@ -89,13 +89,13 @@ trait DataStoreSerializationTrait{
         CodecHelper::writeString($out, $update->property);
         CodecHelper::writeString($out, $update->path);
         $this->writeDataStoreValue($out, $update->data);
-        VarInt::writeUnsignedInt($out, $update->updateCount);
+        LE::writeUnsignedInt($out, $update->updateCount);
     }
 
     protected function writeChange(ByteBufferWriter $out, DataStoreChange $change) : void{
         CodecHelper::writeString($out, $change->name);
         CodecHelper::writeString($out, $change->property);
-        VarInt::writeUnsignedInt($out, $change->updateCount);
+        LE::writeUnsignedInt($out, $change->updateCount);
         $this->writeDataStoreValue($out, $change->data);
     }
 
